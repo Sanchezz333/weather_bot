@@ -1,10 +1,9 @@
 import telebot
 from telebot import types
 import json
+import os
 
-TOKEN = ""
-with open("tbot") as tkn:
-    TOKEN = tkn.readline().strip()
+TOKEN = os.environ["TELEGRAM_TOKEN"]
 
 print(
     """
