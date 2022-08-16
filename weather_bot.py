@@ -98,7 +98,7 @@ def main_handler(message: types.Message):
         )
         bot.send_message(
             user_id,
-            "А какой город?",
+            "А какой город? Выбери или введи название",
             reply_markup=markup,
         )
         change_data("states", user_id, CITY_STATE)
@@ -125,7 +125,7 @@ def city_handler(message: types.Message):
         markup.add(*[types.KeyboardButton(button) for button in ["Сегодня", "Завтра"]])
         bot.send_message(
             user_id,
-            'А какая дата? Введи "сегодня" или "завтра"',
+            "А какая дата? Выбери или введи в формате дд.мм",
             reply_markup=markup,
         )
         change_data("states", user_id, WEATHER_DATE_STATE)
