@@ -77,7 +77,7 @@ def get_weather_text(weather_data, day):
     text = ''
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
-            text = f"""На {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M %d-%m-%Y')}
+            text += f"""На {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M %d-%m-%Y')}
 Температура: {i['main']['temp']}\n"""
 
     return text
