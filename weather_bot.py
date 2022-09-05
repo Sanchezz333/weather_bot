@@ -167,9 +167,21 @@ def weather_date(message: types.Message):
         change_data("states", user_id, MAIN_STATE)
 
     elif message.text.lower() in days:
+        params = {"q": city, "appid": WEATHER_TOKEN, "units": "metric"}
+        res = requests.get(api_url + "forecast", params=params)
+        weather_data = res.json()
+        number_of_day = days.index(message.text.lower())
+        day = date.today() + timedelta(days=number_of_day)
+
+        for i in weather_data['list']:
+            if day.strftime('%Y-%m-%d') in i['dt_txt']:
+                print(f"""
+На {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M %d-%m-%Y')}
+Температура: {i['main']['temp']}""")
+
         bot.send_message(
             user_id,
-            "Не доделано",
+            day,
             reply_markup=markup,
         )
         change_data("states", user_id, MAIN_STATE)
