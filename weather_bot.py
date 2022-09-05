@@ -4,6 +4,7 @@ import json
 import os
 import redis
 import requests
+from datetime import date, timedelta, datetime, time
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 WEATHER_TOKEN = os.environ["WEATHER_TOKEN"]
@@ -62,6 +63,15 @@ def change_data(key, user_id, value):
         redis_db = redis.from_url(redis_url)
         redis_db.set("data", json.dumps(data))
 
+def list_of_days():
+    today = date.today()
+    one_day = timedelta(days=1)
+    day = today + one_day
+    keys = []
+    for i in range(3):
+        day += one_day
+        keys.append(day.strftime('%d-%m-%Y'))
+    return keys
 
 @bot.message_handler(func=lambda message: True)
 def dispatcher(message: types.Message):
@@ -120,12 +130,14 @@ def city_handler(message: types.Message):
     print(res.url)
     print(res.status_code)
     if int(res.status_code) < 400:
+        buttons = ["Сейчас", "Сегодня", "Завтра"] + list_of_days()
+        
         change_data(WEATHER_DATE_STATE, user_id, message.text)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        markup.add(*[types.KeyboardButton(button) for button in ["Сегодня", "Завтра"]])
+        markup.add(*[types.KeyboardButton(button) for button in buttons])
         bot.send_message(
             user_id,
-            "А какая дата? Выбери или введи в формате дд.мм",
+            "А какая дата?",
             reply_markup=markup,
         )
         change_data("states", user_id, WEATHER_DATE_STATE)
@@ -139,13 +151,14 @@ def weather_date(message: types.Message):
     city = data[WEATHER_DATE_STATE][user_id]
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("Погода"))
-    if message.text.lower() == "сегодня":
+    days = ["сегодня", "завтра"] + list_of_days()
+    if message.text.lower() == "сейчас":
         params = {"q": city, "appid": WEATHER_TOKEN, "units": "metric"}
         res = requests.get(api_url + "weather", params=params)
         weather_data = res.json()
         bot.send_message(
             user_id,
-            f"""Сегдня в городе {city.capitalize()} {weather_data["main"]["temp"]} градусов
+            f"""Сейчас в городе {city} {weather_data["main"]["temp"]} градусов
 Ощущается как {weather_data["main"]["feels_like"]} градусов
 Влажность {weather_data["main"]["humidity"]}%
 Ветер {weather_data["wind"]["speed"]} м/с""",
@@ -153,7 +166,7 @@ def weather_date(message: types.Message):
         )
         change_data("states", user_id, MAIN_STATE)
 
-    elif message.text.lower() == "завтра":
+    elif message.text.lower() in days:
         bot.send_message(
             user_id,
             "Не доделано",
