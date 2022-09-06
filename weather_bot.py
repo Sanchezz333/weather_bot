@@ -73,12 +73,16 @@ def list_of_days():
         keys.append(day.strftime('%d-%m-%Y'))
     return keys
 
-def get_weather_text(weather_data, day):
+def get_weather_text(weather_data, city, day):
     text = ''
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
-            text += f"""На {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M %d-%m-%Y')}
-Температура: {i['main']['temp']}\n"""
+            text += f"""В городе {city} на {day.strftime('%d-%m-%Y')}:
+В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
+Температура: {i['main']['temp']} градусов
+Ощущается как {weather_data["main"]["feels_like"]} градусов
+Влажность {weather_data["main"]["humidity"]}%
+Ветер {weather_data["wind"]["speed"]} м/с\n\n"""
 
     return text
 
@@ -184,7 +188,7 @@ def weather_date(message: types.Message):
 
         bot.send_message(
             user_id,
-            get_weather_text(weather_data, day),
+            get_weather_text(weather_data, city, day),
             reply_markup=markup,
         )
         change_data("states", user_id, MAIN_STATE)
