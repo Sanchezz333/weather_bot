@@ -80,9 +80,10 @@ def get_weather_text(weather_data, city, day):
             text += f"""В городе {city} на {day.strftime('%d-%m-%Y')}:
 В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
 Температура: {i['main']['temp']} градусов
-Ощущается как {weather_data["main"]["feels_like"]} градусов
-Влажность {weather_data["main"]["humidity"]}%
-Ветер {weather_data["wind"]["speed"]} м/с\n\n"""
+Ощущается как {i["main"]["feels_like"]} градусов
+Влажность {i["main"]["humidity"]}%
+Ветер {i["wind"]["speed"]} м/с
+\n"""
 
     return text
 
