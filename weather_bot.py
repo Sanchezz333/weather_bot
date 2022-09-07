@@ -74,11 +74,10 @@ def list_of_days():
     return keys
 
 def get_weather_text(weather_data, city, day):
-    text = ''
+    text = f'В городе {city} на {day.strftime('%d-%m-%Y')}:\n'
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
-            text += f"""В городе {city} на {day.strftime('%d-%m-%Y')}:
-В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
+            text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
 Температура: {i['main']['temp']} градусов
 Ощущается как {i["main"]["feels_like"]} градусов
 Влажность {i["main"]["humidity"]}%
