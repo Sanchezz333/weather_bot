@@ -29,13 +29,14 @@ redis_url = os.environ.get("REDIS_URL")
 if redis_url is None:
     try:
         data = json.load(open("db/data.json", "r", encoding="utf-8"))
-
+        
     except FileNotFoundError:
         data = {
             "states": {},
             "city": {},
             "user_cities": {},
         }
+    
 else:
     redis_db = redis.from_url(redis_url)
     raw_data = redis_db.get("data")
@@ -48,6 +49,8 @@ else:
     else:
         data = json.loads(raw_data)
 
+city_check = data.get("user_cities",{})  
+data["user_cities"] = city_check
 
 def change_data(key, user_id, value):
     data[key][user_id] = value
