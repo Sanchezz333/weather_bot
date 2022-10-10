@@ -23,6 +23,7 @@ bot = telebot.TeleBot(TOKEN)
 MAIN_STATE = "main"
 CITY_STATE = "city"
 WEATHER_DATE_STATE = "weather_date_handler"
+ADD_CITY = "add_city"
 
 redis_url = os.environ.get("REDIS_URL")
 if redis_url is None:
@@ -32,9 +33,8 @@ if redis_url is None:
     except FileNotFoundError:
         data = {
             "states": {},
-            MAIN_STATE: {},
-            CITY_STATE: {},
-            WEATHER_DATE_STATE: {},
+            "city": {},
+            "user_cities": {},
         }
 else:
     redis_db = redis.from_url(redis_url)
@@ -42,9 +42,8 @@ else:
     if raw_data is None:
         data = {
             "states": {},
-            MAIN_STATE: {},
-            CITY_STATE: {},
-            WEATHER_DATE_STATE: {},
+            "city": {},
+            "user_cities": {},
         }
     else:
         data = json.loads(raw_data)
@@ -97,6 +96,8 @@ def dispatcher(message: types.Message):
         city_handler(message)
     elif state == WEATHER_DATE_STATE:
         weather_date(message)
+    elif state == ADD_CITY:
+        add_city(message)
 
 
 def main_handler(message: types.Message):
@@ -114,10 +115,20 @@ def main_handler(message: types.Message):
         )
         change_data("states", user_id, MAIN_STATE)
 
+    elif message.text == "/add":
+        bot.send_message(
+            user_id,
+            "Введи город который хочешь добавить",            
+        )
+        change_data("states", user_id, ADD_CITY)
+
     elif message.text == "Погода":
+        sities = ["Москва", "Санкт Петербург"]
+        user_sities = data["user_cities"].get(user_id, [])
+        sities += user_sities
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         markup.add(
-            *[types.KeyboardButton(button) for button in ["Москва", "Санкт Петербург"]]
+            *[types.KeyboardButton(button) for button in sities]
         )
         bot.send_message(
             user_id,
@@ -140,12 +151,10 @@ def city_handler(message: types.Message):
     user_id = str(message.from_user.id)
     params = {"q": message.text, "appid": WEATHER_TOKEN, "units": "metric"}
     res = requests.get(api_url + "weather", params=params)
-    print(res.url)
-    print(res.status_code)
     if int(res.status_code) < 400:
         buttons = ["Сейчас", "Сегодня", "Завтра"] + list_of_days()
         
-        change_data(WEATHER_DATE_STATE, user_id, message.text)
+        change_data("city", user_id, message.text)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         markup.add(*[types.KeyboardButton(button) for button in buttons])
         bot.send_message(
@@ -161,7 +170,7 @@ def city_handler(message: types.Message):
 
 def weather_date(message: types.Message):
     user_id = str(message.from_user.id)
-    city = data[WEATHER_DATE_STATE][user_id]
+    city = data["city"][user_id]
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("Погода"))
     days = ["сегодня", "завтра"] + list_of_days()
@@ -204,6 +213,42 @@ def weather_date(message: types.Message):
     else:
         bot.reply_to(message, "Я тебя не понял")
 
+
+def add_city(message: types.Message):
+    user_id = str(message.from_user.id)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton("Погода"))
+
+    if message.text == "/back":
+        bot.send_message(
+            user_id,
+            "Ооооокей. Поехали обратно.",
+            reply_markup=markup,
+        )
+        change_data("states", user_id, MAIN_STATE)
+        
+    else:
+        params = {"q": message.text, "appid": WEATHER_TOKEN, "units": "metric"}
+        res = requests.get(api_url + "weather", params=params)    
+        if int(res.status_code) < 400:
+            user_sities = data["user_cities"].get(user_id, [])
+            user_sities.append(message.text)
+            change_data("user_cities", user_id, user_sities)
+            
+            bot.send_message(
+                user_id,
+                "Добавил!",
+                reply_markup=markup,
+            )
+            change_data("states", user_id, MAIN_STATE)
+
+        else:
+            
+            bot.send_message(
+                user_id,
+                "Нет такого города!",
+                
+            )
 
 if __name__ == "__main__":
     bot.infinity_polling()
