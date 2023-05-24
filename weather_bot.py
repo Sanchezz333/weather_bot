@@ -28,7 +28,7 @@ ADD_CITY = "add_city"
 redis_url = os.environ.get("REDIS_URL")
 if redis_url is None:
     try:
-        data = json.load(open("data/data.json", "r", encoding="utf-8"))
+        data = json.load(open("/data/data.json", "r", encoding="utf-8"))
         
     except FileNotFoundError:
         data = {
@@ -57,7 +57,7 @@ def change_data(key, user_id, value):
     if redis_url is None:
         json.dump(
             data,
-            open("data/data.json", "w", encoding="utf-8"),
+            open("/data/data.json", "w", encoding="utf-8"),
             indent=2,
             ensure_ascii=False,
         )
