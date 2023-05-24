@@ -28,7 +28,7 @@ ADD_CITY = "add_city"
 redis_url = os.environ.get("REDIS_URL")
 if redis_url is None:
     try:
-        data = json.load(open("db/data.json", "r", encoding="utf-8"))
+        data = json.load(open("data/data.json", "r", encoding="utf-8"))
         
     except FileNotFoundError:
         data = {
@@ -250,7 +250,6 @@ def add_city(message: types.Message):
             bot.send_message(
                 user_id,
                 "Нет такого города!",
-                
             )
 
 if __name__ == "__main__":
