@@ -99,10 +99,8 @@ def dispatcher(message: types.Message):
             '\n'.join(files),
         )
     elif message.text == "/get_data":
-        bot.send_document(
-            user_id,
-            types.InputFile('/data/data.json')
-        )
+        with open('/data/data.json', 'rb') as file:
+            bot.send_document(user_id, file)
     elif state == MAIN_STATE:
         main_handler(message)
     elif state == CITY_STATE:
