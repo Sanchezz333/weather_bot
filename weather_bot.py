@@ -98,9 +98,9 @@ def dispatcher(message: types.Message):
             user_id,
             '\n'.join(files),
         )
-    if message.text == "/get_data":
-
-    if state == MAIN_STATE:
+    elif message.text == "/get_data":
+        pass
+    elif state == MAIN_STATE:
         main_handler(message)
     elif state == CITY_STATE:
         city_handler(message)
