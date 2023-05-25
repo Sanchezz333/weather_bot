@@ -19,7 +19,6 @@ Work with TOKEN: """,
 
 bot = telebot.TeleBot(TOKEN)
 
-
 MAIN_STATE = "main"
 CITY_STATE = "city"
 WEATHER_DATE_STATE = "weather_date_handler"
@@ -92,6 +91,14 @@ def get_weather_text(weather_data, city, day):
 def dispatcher(message: types.Message):
     user_id = str(message.from_user.id)
     state = data["states"].get(user_id, MAIN_STATE)
+
+    if message.text == "/show_data":
+        files = os.listdir('/data')
+        bot.send_message(
+            user_id,
+            '\n'.join(files),
+        )
+    if message.text == "/get_data":
 
     if state == MAIN_STATE:
         main_handler(message)
