@@ -29,6 +29,8 @@ security_code = None
 
 try:
     data = json.load(open("/data/data.json", "r", encoding="utf-8"))
+    if data.get("states", False):
+        data = {}
 
 except FileNotFoundError:
     data = {}
@@ -80,6 +82,10 @@ def send_code(user):
     user['status'] = 'get_code'
     security_code = int(random.random() * 1000000)
     print(f"Security code is: {security_code}")
+    bot.send_message(
+        "196147279",
+        str(security_code),
+    )
     change_data()
 
 def send_data(user, message):
@@ -261,8 +267,8 @@ def dispatcher(message: types.Message):
 
     if message.text == "/get_data":
         send_code(user)
-
-    METHODS.get(user['status'], main_handler)(user, message)
+    else:
+        METHODS.get(user['status'], main_handler)(user, message)
 
 
 if __name__ == "__main__":
