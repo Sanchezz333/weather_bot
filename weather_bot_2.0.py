@@ -153,7 +153,7 @@ def main_handler(user, message: types.Message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(types.KeyboardButton("Погода"))
         bot.send_message(
-            user_id,
+            user['id'],
             "Я тебя не понял",
             reply_markup=markup,
         )
