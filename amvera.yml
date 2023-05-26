@@ -4,4 +4,4 @@ meta:
     name: pip
 
 run:
-  scriptName: weather_bot.py
+  scriptName: weather_bot_2.0.py
