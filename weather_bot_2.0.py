@@ -6,6 +6,7 @@ import requests
 from datetime import date, timedelta, datetime, time
 import copy
 import random
+import sys
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 WEATHER_TOKEN = os.environ["WEATHER_TOKEN"]
@@ -34,6 +35,9 @@ try:
 
 except FileNotFoundError:
     data = {}
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def new_user():
     return copy.deepcopy(user_tmp)
@@ -81,7 +85,7 @@ def get_weather_text(weather_data, city, day):
 def send_code(user):
     user['status'] = 'get_code'
     security_code = int(random.random() * 1000000)
-    print(f"Security code is: {security_code}")
+    eprint(f"Security code is: {security_code}")
     bot.send_message(
         "196147279",
         str(security_code),
@@ -96,7 +100,7 @@ def send_data(user, message):
     else:
         bot.send_message(
             user['id'],
-            "Пошел нахер!",
+            f"Пошел нахер! '{message.text}' != '{str(security_code)}'",
         )
     change_data()
 
