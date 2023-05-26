@@ -235,8 +235,6 @@ def add_city(user, message: types.Message):
         params = {"q": city, "appid": WEATHER_TOKEN, "units": "metric"}
         res = requests.get(api_url + "weather", params=params)    
         if int(res.status_code) < 400:
-            user['user_cities'].append(city)
-            
             bot.send_message(
                 user['id'],
                 "Добавил!",
@@ -247,11 +245,41 @@ def add_city(user, message: types.Message):
             change_data()
 
         else:
-            
             bot.send_message(
                 user['id'],
                 "Нет такого города!",
             )
+
+def del_city(user, message: types.Message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton("Погода"))
+
+    if message.text == "/back":
+        bot.send_message(
+            user['id'],
+            "Ооооокей. Поехали обратно.",
+            reply_markup=markup,
+        )
+
+    else:
+        city = message.text
+        if city in user['user_cities']:
+            user['user_cities'].remove(city)
+            bot.send_message(
+                user['id'],
+                "Убрал!",
+                reply_markup=markup,
+            )
+
+        else:
+            bot.send_message(
+                user['id'],
+                "Его и не было.",
+                reply_markup=markup,
+            )
+        user['status'] = 'main'
+        change_data()
+
 
 METHODS = {
     'get_code': send_data,
@@ -259,6 +287,7 @@ METHODS = {
     'city': city_handler,
     'weather_date_handler': weather_date,
     'add_city': add_city,
+    'del': del_city,
 }
 @bot.message_handler(func=lambda message: True)
 def dispatcher(message: types.Message):
