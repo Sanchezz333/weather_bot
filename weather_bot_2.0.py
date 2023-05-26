@@ -296,7 +296,7 @@ METHODS = {
     'city': city_handler,
     'weather_date_handler': weather_date,
     'add_city': add_city,
-    'del': del_city,
+    'del_city': del_city,
 }
 @bot.message_handler(func=lambda message: True)
 def dispatcher(message: types.Message):
