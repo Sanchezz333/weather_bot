@@ -90,7 +90,7 @@ def send_code(user):
 
 def send_data(user, message):
     user['status'] = 'main'
-    if message.text == security_code:
+    if message.text == str(security_code):
         with open('/data/data.json', 'rb') as file:
             bot.send_document(user['id'], file)
     else:
