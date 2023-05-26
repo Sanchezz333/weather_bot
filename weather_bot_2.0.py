@@ -83,7 +83,8 @@ def get_weather_text(weather_data, city, day):
 
 def send_code(user):
     user['status'] = 'get_code'
-    global security_code = int(random.random() * 1000000)
+    global security_code
+    security_code = int(random.random() * 1000000)
     eprint(f"Security code is: {security_code}")
     bot.send_message(
         "196147279",
