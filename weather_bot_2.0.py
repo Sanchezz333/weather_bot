@@ -12,7 +12,10 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 WEATHER_TOKEN = os.environ["WEATHER_TOKEN"]
 api_url = "https://api.openweathermap.org/data/2.5/"
 
-print(
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+eprint(
     """
 Start telegram bot...
 Work with TOKEN: """,
@@ -36,8 +39,6 @@ try:
 except FileNotFoundError:
     data = {}
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
 
 def new_user():
     return copy.deepcopy(user_tmp)
