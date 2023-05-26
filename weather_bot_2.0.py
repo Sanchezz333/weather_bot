@@ -10,6 +10,7 @@ import sys
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 WEATHER_TOKEN = os.environ["WEATHER_TOKEN"]
+TARGET_ID = os.environ["TARGET_ID"]
 api_url = "https://api.openweathermap.org/data/2.5/"
 
 def eprint(*args, **kwargs):
@@ -87,7 +88,7 @@ def send_code(user):
     security_code = int(random.random() * 1000000)
     eprint(f"Security code is: {security_code}")
     bot.send_message(
-        "196147279",
+        TARGET_ID,
         str(security_code),
     )
     change_data()
@@ -123,6 +124,14 @@ def main_handler(user, message: types.Message):
             "Введи город который хочешь добавить",            
         )
         user['status'] = 'add_city'
+        change_data()
+
+    elif message.text == "/del":
+        bot.send_message(
+            user['id'],
+            "Введи город который хочешь удалить",
+        )
+        user['status'] = 'del_city'
         change_data()
 
     elif message.text == "Погода":
