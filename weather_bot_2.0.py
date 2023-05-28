@@ -29,6 +29,7 @@ user_tmp = {
     'status': 'main',
     'city': None,
     'user_cities': [],
+    'raw_state': False,
 }
 security_code = None
 
@@ -45,11 +46,11 @@ def new_user():
 def get_value(user, key):
     value = user.get(key, '*%*')
     if value == '*%*':
-        patcher()
+        patcher(user, key)
     return user[key]
 
-def patcher():
-    pass
+def patcher(user, key):
+    user[key] = copy.deepcopy(user_tmp[key])
 
 def change_data():
     json.dump(
@@ -93,6 +94,11 @@ def send_code(user):
         str(security_code),
     )
     change_data()
+
+def set_raw(user):
+    raw = get_value(user, 'raw_state')
+    user['raw_state'] = not(raw)
+
 
 def send_data(user, message):
     user['status'] = 'main'
@@ -182,6 +188,7 @@ def city_handler(user, message: types.Message):
 
 def weather_date(user, message: types.Message):
     city = user['city']
+    raw = get_value(user, 'raw_state')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("Погода"))
     days = ["сегодня", "завтра"] + list_of_days()
@@ -189,15 +196,23 @@ def weather_date(user, message: types.Message):
         params = {"q": city, "appid": WEATHER_TOKEN, "units": "metric"}
         res = requests.get(api_url + "weather", params=params)
         weather_data = res.json()
-        bot.send_message(
-            user['id'],
-            f"""Сейчас в городе {city} {weather_data["weather"][0]["main"]}: {weather_data["weather"][0]["description"]}
+        if raw:
+            bot.send_message(
+                user['id'],
+                weather_data,
+                reply_markup = markup,
+            )
+
+        else:
+            bot.send_message(
+                user['id'],
+                f"""Сейчас в городе {city} {weather_data["weather"][0]["main"]}: {weather_data["weather"][0]["description"]}
 Температура {weather_data["main"]["temp"]} градусов
 Ощущается как {weather_data["main"]["feels_like"]} градусов
 Влажность {weather_data["main"]["humidity"]}%
 Ветер {weather_data["wind"]["speed"]} м/с""",
-            reply_markup=markup,
-        )
+                reply_markup=markup,
+            )
         user['status'] = 'main'
         change_data()
 
@@ -311,6 +326,8 @@ def dispatcher(message: types.Message):
 
     if message.text == "/get_data":
         send_code(user)
+    elif message.text == "/raw":
+        set_raw(user)
     else:
         METHODS.get(user['status'], main_handler)(user, message)
 
