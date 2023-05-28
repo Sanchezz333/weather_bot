@@ -87,8 +87,7 @@ def get_weather_text(weather_data, city, day):
 
             else:
                 text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
-Погода: {weather_template(i)}
-\n"""
+Погода: {weather_template(i)}\n\n"""
 
     return text
 
