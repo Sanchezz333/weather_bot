@@ -70,16 +70,23 @@ def list_of_days():
         keys.append(day.strftime('%d-%m-%Y'))
     return keys
 
+def weather_template(data):
+    return f"""{data["weather"][0]["main"]}: {data["weather"][0]["description"]}
+Температура {data['main']['temp']} градусов
+Ощущается как {data["main"]["feels_like"]} градусов
+Влажность {data["main"]["humidity"]}%
+Ветер {data["wind"]["speed"]} м/с"""
+
 def get_weather_text(weather_data, city, day):
     text = f"В городе {city} на {day.strftime('%d-%m-%Y')}:\n"
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
-            text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
-Погода: {i["weather"][0]["main"]}: {i["weather"][0]["description"]}
-Температура {i['main']['temp']} градусов
-Ощущается как {i["main"]["feels_like"]} градусов
-Влажность {i["main"]["humidity"]}%
-Ветер {i["wind"]["speed"]} м/с
+            if raw:
+                text += f"{json.dumps(weather_data, indent=4)}\n\n"
+
+            else:
+                text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
+Погода: {weather_template(i)}
 \n"""
 
     return text
@@ -199,18 +206,14 @@ def weather_date(user, message: types.Message):
         if raw:
             bot.send_message(
                 user['id'],
-                json.dumps(weather_data, indent=1),
+                json.dumps(weather_data, indent=4),
                 reply_markup = markup,
             )
 
         else:
             bot.send_message(
                 user['id'],
-                f"""Сейчас в городе {city} {weather_data["weather"][0]["main"]}: {weather_data["weather"][0]["description"]}
-Температура {weather_data["main"]["temp"]} градусов
-Ощущается как {weather_data["main"]["feels_like"]} градусов
-Влажность {weather_data["main"]["humidity"]}%
-Ветер {weather_data["wind"]["speed"]} м/с""",
+                f"""Сейчас в городе {city} {weather_template(weather_data)}""",
                 reply_markup=markup,
             )
         user['status'] = 'main'
