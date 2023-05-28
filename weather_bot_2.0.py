@@ -74,7 +74,8 @@ def get_weather_text(weather_data, city, day):
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
             text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
-Температура: {i['main']['temp']} градусов
+Погода: {i["weather"][0]["main"]}: {i["weather"][0]["description"]}
+Температура {i['main']['temp']} градусов
 Ощущается как {i["main"]["feels_like"]} градусов
 Влажность {i["main"]["humidity"]}%
 Ветер {i["wind"]["speed"]} м/с
@@ -190,7 +191,8 @@ def weather_date(user, message: types.Message):
         weather_data = res.json()
         bot.send_message(
             user['id'],
-            f"""Сейчас в городе {city} {weather_data["main"]["temp"]} градусов
+            f"""Сейчас в городе {city} {weather_data["weather"][0]["main"]}: {weather_data["weather"][0]["description"]}
+Температура {weather_data["main"]["temp"]} градусов
 Ощущается как {weather_data["main"]["feels_like"]} градусов
 Влажность {weather_data["main"]["humidity"]}%
 Ветер {weather_data["wind"]["speed"]} м/с""",
