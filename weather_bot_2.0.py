@@ -77,7 +77,7 @@ def weather_template(data):
 Влажность {data["main"]["humidity"]}%
 Ветер {data["wind"]["speed"]} м/с"""
 
-def get_weather_text(weather_data, city, day):
+def get_weather_text(weather_data, city, day, raw):
     text = f"В городе {city} на {day.strftime('%d-%m-%Y')}:\n"
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
@@ -228,7 +228,7 @@ def weather_date(user, message: types.Message):
 
         bot.send_message(
             user['id'],
-            get_weather_text(weather_data, city, day),
+            get_weather_text(weather_data, city, day, raw),
             reply_markup=markup,
         )
         user['status'] = 'main'
