@@ -199,7 +199,7 @@ def weather_date(user, message: types.Message):
         if raw:
             bot.send_message(
                 user['id'],
-                weather_data,
+                str(weather_data),
                 reply_markup = markup,
             )
 
