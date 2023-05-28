@@ -82,7 +82,8 @@ def get_weather_text(weather_data, city, day):
     for i in weather_data['list']:
         if day.strftime('%Y-%m-%d') in i['dt_txt']:
             if raw:
-                text += f"{json.dumps(weather_data, indent=4)}\n\n"
+                text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
+{json.dumps(weather_data, indent=4)}\n\n"""
 
             else:
                 text += f"""В {datetime.utcfromtimestamp(i['dt']).strftime('%H:%M')}
