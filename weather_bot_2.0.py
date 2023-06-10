@@ -70,8 +70,25 @@ def list_of_days():
         keys.append(day.strftime('%d-%m-%Y'))
     return keys
 
+def emoji(id):
+    if id < 300:
+        return '⛈️'
+    elif id < 400:
+        return '💦'
+    elif id < 500:
+        return ''
+    elif id < 600:
+        return '🌧️'
+    elif id < 700:
+        return '❄️'
+    elif id < 800:
+        return '🌫'
+    elif id = 800:
+        return '☀️'
+    elif id < 900:
+        return '🌤'
 def weather_template(data):
-    return f"""{data["weather"][0]["main"]}: {data["weather"][0]["description"]}
+    return f"""{emoji(data["weather"][0]["id"])}: {data["weather"][0]["description"]}
 Температура {data['main']['temp']} градусов
 Ощущается как {data["main"]["feels_like"]} градусов
 Влажность {data["main"]["humidity"]}%
